@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.griddynamics</groupId>
+        <artifactId>streaming-blueprint</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>streaming</artifactId>
+    <name>in-stream-tweets-analyzer</name>
+    <packaging>jar</packaging>
+
+    <properties>
+        <!-- packaging -->
+        <distribution.directory>${project.build.directory}/${project.name}</distribution.directory>
+    </properties>
+
+    <dependencies>
+
+        <!-- PROVIDED WITH ENVIRONMENT -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.tools.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_${scala.tools.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- CORE DEPENDENCIES -->
+
+        <dependency>
+            <groupId>com.griddynamics</groupId>
+            <artifactId>dictionary-populator</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <!--
+                Avoiding exception: java.lang.ClassCastException: com.datastax.driver.core.DefaultResultSetFuture cannot
+                be cast to shade.com.datastax.spark.connector.google.common.util.concurrent.ListenableFuture
+                see: http://stackoverflow.com/questions/39988908/java-spark-and-cassandra-java-lang-classcastexception-com-datastax-driver-core
+                -->
+                <exclusion>
+                    <groupId>com.datastax.cassandra</groupId>
+                    <artifactId>cassandra-driver-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka_${scala.tools.version}</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.datastax.spark</groupId>
+            <artifactId>spark-cassandra-connector_${scala.tools.version}</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.debasishg</groupId>
+            <artifactId>redisclient_${scala.tools.version}</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-scala_${scala.tools.version}</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.rholder</groupId>
+            <artifactId>snowball-stemmer</artifactId>
+            <version>1.3.0.581.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.scopt</groupId>
+            <artifactId>scopt_${scala.tools.version}</artifactId>
+        </dependency>
+
+        <!-- TEST DEPENDENCIES -->
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.griddynamics</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- BUILD -->
+
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- PACKAGING -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${distribution.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <includeScope>runtime</includeScope>
+
+                            <!--
+                            Spark is very sensitive to 3rd party dependencies versions mismatch.
+                            Usual way is to clean them up in "exclude" of an affected dependencies,
+                            but some libraries are so noisy, that it is easier to clean up them
+                            here. Once and for all.
+                            -->
+                            <excludeArtifactIds>slf4j-api</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.griddynamics.blueprint.streaming.App</mainClass>
+                        </manifest>
+                    </archive>
+                    <outputDirectory>${distribution.directory}</outputDirectory>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptor>src/assembly/bin.xml</descriptor>
+                            <finalName>${project.name}</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- INTEGRATION TESTS PREPARATION -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>reserve-ports-for-tests</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>reserve-network-port</goal>
+                        </goals>
+                        <configuration>
+                            <portNames>
+                                <portName>redis.reserved.port</portName>
+                                <portName>cassandra.nativeTransportPort</portName>
+                                <portName>cassandra.jmxPort</portName>
+                                <portName>cassandra.stopPort</portName>
+                                <portName>cassandra.storagePort</portName>
+                            </portNames>
+                            <minPortNumber>19000</minPortNumber>
+                            <maxPortNumber>19050</maxPortNumber>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cassandra-maven-plugin</artifactId>
+                <configuration>
+                    <loadFailureIgnore>true</loadFailureIgnore>
+                </configuration>
+            </plugin>
+
+            <!-- INTEGRATION TESTS -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <!-- forkCount, reuseForks and increased heap size is a special requirement of spark-testing-base -->
+                    <argLine>-Xmx1024m</argLine>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <systemProperties>
+                        <redis.reserved.port>${redis.reserved.port}</redis.reserved.port>
+                        <cassandra.nativeTransportPort>${cassandra.nativeTransportPort}</cassandra.nativeTransportPort>
+                    </systemProperties>
+                    <environmentVariables>
+                        <!-- To mitigate Spark warning about loopback address -->
+                        <SPARK_LOCAL_IP>localhost</SPARK_LOCAL_IP>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>${project.build.scriptSourceDirectory}</directory>
+                <targetPath>${distribution.directory}</targetPath>
+            </resource>
+
+            <resource>
+                <!--move it outside of the jar to allow ad-hoc customization -->
+                <directory>${project.basedir}/src/main/configs</directory>
+                <includes>
+                    <include>log4j.properties</include>
+                    <include>application.conf</include>
+                </includes>
+                <targetPath>${distribution.directory}</targetPath>
+            </resource>
+        </resources>
+
+    </build>
+
+</project>

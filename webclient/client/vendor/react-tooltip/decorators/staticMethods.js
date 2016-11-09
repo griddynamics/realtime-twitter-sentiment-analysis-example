@@ -1,0 +1,94 @@
+/**
+ * The MIT License (MIT)
+ * Copyright (c) 2015 Wang Zixiao
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject
+ * to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+ * ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+ * SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+/**
+ * Static methods for react-tooltip
+ */
+import CONSTANT from '../constant'
+
+const dispatchGlobalEvent = (eventName, opts) => {
+  // Compatibale with IE
+  // @see http://stackoverflow.com/questions/26596123/internet-explorer-9-10-11-event-constructor-doesnt-work
+  let event
+
+  if (typeof window.CustomEvent === 'function') {
+    event = new window.CustomEvent(eventName, { detail: opts })
+  } else {
+    event = document.createEvent('Event')
+    event.initEvent(eventName, false, true)
+    event.detail = opts
+  }
+
+  window.dispatchEvent(event)
+}
+
+export default function (target) {
+  /**
+   * Hide all tooltip
+   * @trigger ReactTooltip.hide()
+   */
+  target.hide = (target) => {
+    dispatchGlobalEvent(CONSTANT.GLOBAL.HIDE, {target})
+  }
+
+  /**
+   * Rebuild all tooltip
+   * @trigger ReactTooltip.rebuild()
+   */
+  target.rebuild = () => {
+    dispatchGlobalEvent(CONSTANT.GLOBAL.REBUILD)
+  }
+
+  /**
+   * Show specific tooltip
+   * @trigger ReactTooltip.show()
+   */
+  target.show = (target) => {
+    dispatchGlobalEvent(CONSTANT.GLOBAL.SHOW, {target})
+  }
+
+  target.prototype.globalRebuild = function () {
+    if (this.mount) {
+      this.unbindListener()
+      this.bindListener()
+    }
+  }
+
+  target.prototype.globalShow = function (event) {
+    if (this.mount) {
+      // Create a fake event, specific show will limit the type to `solid`
+      // only `float` type cares e.clientX e.clientY
+      const e = { currentTarget: event.detail.target }
+      this.showTooltip(e, true)
+    }
+  }
+
+  target.prototype.globalHide = function (event) {
+    if (this.mount) {
+      const hasTarget = event && event.detail && event.detail.target && true || false
+      this.hideTooltip({ currentTarget: hasTarget && event.detail.target }, hasTarget)
+    }
+  }
+}

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>streaming-blueprint</artifactId>
+        <groupId>com.griddynamics</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dictionary-populator</artifactId>
+    <name>dictionary-populator</name>
+    <packaging>jar</packaging>
+
+    <properties>
+        <!-- packaging -->
+        <distribution.directory>${project.build.directory}/${project.name}</distribution.directory>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.datastax.cassandra</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.tototoshi</groupId>
+            <artifactId>scala-csv_${scala.tools.version}</artifactId>
+            <version>1.3.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.scopt</groupId>
+            <artifactId>scopt_${scala.tools.version}</artifactId>
+        </dependency>
+
+        <!-- TEST DEPENDENCIES -->
+        <dependency>
+            <groupId>com.griddynamics</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- BUILD -->
+
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- PACKAGING -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${distribution.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.griddynamics.blueprint.streaming.CassandraPopulator</mainClass>
+                        </manifest>
+                    </archive>
+                    <outputDirectory>${distribution.directory}</outputDirectory>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptor>src/assembly/bin.xml</descriptor>
+                            <finalName>${project.name}</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- INTEGRATION TESTS PREPARATION -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>reserve-ports-for-tests</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>reserve-network-port</goal>
+                        </goals>
+                        <configuration>
+                            <portNames>
+                                <portName>cassandra.nativeTransportPort</portName>
+                                <portName>cassandra.jmxPort</portName>
+                                <portName>cassandra.stopPort</portName>
+                                <portName>cassandra.storagePort</portName>
+                            </portNames>
+                            <minPortNumber>19000</minPortNumber>
+                            <maxPortNumber>19050</maxPortNumber>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cassandra-maven-plugin</artifactId>
+                <configuration>
+                    <loadFailureIgnore>true</loadFailureIgnore>
+                </configuration>
+            </plugin>
+
+            <!-- INTEGRATION TESTS -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <cassandra.nativeTransportPort>${cassandra.nativeTransportPort}</cassandra.nativeTransportPort>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>${project.build.scriptSourceDirectory}</directory>
+                <targetPath>${distribution.directory}</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${project.basedir}/src/main/defaults</directory>
+                <targetPath>${distribution.directory}</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${project.basedir}/src/main/configs</directory>
+                <targetPath>${distribution.directory}</targetPath>
+            </resource>
+        </resources>
+    </build>
+</project>

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.griddynamics</groupId>
+    <artifactId>streaming-blueprint</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>In-Stream Processing Sample App Parent</name>
+    <inceptionYear>2016</inceptionYear>
+
+    <modules>
+        <module>test-utils</module>
+        <module>twitter-consumer</module>
+        <module>streaming</module>
+        <module>dictionary-populator</module>
+    </modules>
+
+    <properties>
+        <!-- To suppress Maven warnings -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- For Spark ecosystem -->
+        <spark.version>1.6.2</spark.version>
+
+        <!-- For Scala ecosystem -->
+        <scala.tools.version>2.10</scala.tools.version>
+        <scala.version>2.10.6</scala.version>
+
+        <!-- For Kafka ecosystem -->
+        <kafka.version>0.8.2.1</kafka.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka_${scala.tools.version}</artifactId>
+                <version>${kafka.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.debasishg</groupId>
+                <artifactId>redisclient_${scala.tools.version}</artifactId>
+                <version>3.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>3.0.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.9.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.joda</groupId>
+                <artifactId>joda-convert</artifactId>
+                <version>1.8.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.typesafe</groupId>
+                <artifactId>config</artifactId>
+                <!-- Do not upgrade version as long as Spark is on Java 1.7-->
+                <version>1.2.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.scopt</groupId>
+                <artifactId>scopt_${scala.tools.version}</artifactId>
+                <version>3.3.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.6.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-scala_${scala.tools.version}</artifactId>
+                <version>2.6.3</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.5.1</version>
+                    <configuration>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>3.2.2</version>
+
+                    <configuration>
+                        <!-- Suppress multiple minor Scala versions warnings. -->
+                        <checkMultipleScalaVersions>false</checkMultipleScalaVersions>
+                    </configuration>
+
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                            <phase>compile</phase>
+                        </execution>
+                        <execution>
+                            <id>test-compile</id>
+                            <goals>
+                                <goal>testCompile</goal>
+                            </goals>
+                            <phase>test-compile</phase>
+                        </execution>
+                     </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.19.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.9.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cassandra-maven-plugin</artifactId>
+                    <version>3.5</version>
+                    <configuration>
+                        <skip>${skipITs}</skip>
+                        <startNativeTransport>true</startNativeTransport>
+                        <cassandraDir>${project.build.directory}/embeddedCassandra</cassandraDir>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>pre-integration-test</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>post-integration-test</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.cassandra</groupId>
+                            <artifactId>cassandra-all</artifactId>
+                            <version>3.4</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <configuration>
+                        <includes>
+                            <include>**/*IT.java</include>
+                        </includes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <goals>
+                                <goal>integration-test</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>verify</id>
+                            <goals>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.10</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.6</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.6</version>
+                    <configuration>
+                        <!-- Necessary to package on OS X and avoid "group id too big" errors -->
+                        <tarLongFileMode>posix</tarLongFileMode>
+                    </configuration>
+                </plugin>
+            </plugins>
+
+        </pluginManagement>
+
+        <plugins>
+
+            <!-- https://github.com/mycila/license-maven-plugin -->
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
+                    <properties>
+                        <owner>Grid Dynamics</owner>
+                        <email>info@griddynamics.com</email>
+                    </properties>
+                    <excludes>
+                        <exclude>LICENSE.txt</exclude>
+                        <exclude>**/README</exclude>
+                        <exclude>**/pom.xml</exclude>
+                        <exclude>**/*.properties</exclude>
+                        <exclude>**/*.conf</exclude>
+                        <exclude>**/*.csv</exclude>
+                        <exclude>src/assembly/**</exclude>
+                        <exclude>src/test/resources/**</exclude>
+                        <exclude>src/main/resources/**</exclude>
+                        <exclude>webclient/**</exclude>
+                        <exclude>cassandra-schema/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
