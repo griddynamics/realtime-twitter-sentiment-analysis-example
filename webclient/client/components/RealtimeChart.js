@@ -15,9 +15,11 @@
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import moment from 'moment';
 import { Line } from '../vendor/react-chartjs2/Chart';
 import ChartHelper from '../helpers/ChartHelper';
+import ChartLegend from './ChartLegend';
+import ChartLegendMobile from '../components/ChartLegendMobile';
+import ReactTooltip from '../vendor/react-tooltip';
 
 /**
  * RealtimeChart component for rendering realtime statistics
@@ -31,6 +33,7 @@ class RealtimeChart extends Component {
     this.helper = new ChartHelper();
 
     this.chartOption = this.helper.getLineOptions();
+    this.chartMobileOption = this.helper.getLineMobileOptions();
     this.chartDataset = this.helper.datasetLineLayers();
     this.processData = this.helper.processLineLayersData;
   }
@@ -45,7 +48,7 @@ class RealtimeChart extends Component {
       this.resetChart();
     }
 
-    if (nextProps.statistic.length !== this.props.statistic,length) {
+    if (nextProps.statistic.length !== this.props.statistic.length) {
       this.updateChart(nextProps.statistic);
     }
 
@@ -80,13 +83,37 @@ class RealtimeChart extends Component {
   }
 
   render() {
+    let options = this.props.viewport.isMobile ? this.chartMobileOption : this.chartOption;
+
     return (
-      <div className="absolute-box">
-        <Line
-          ref='chart'
-          data={ this.chartDataset }
-          options={ this.chartOption }
-        />
+      <div className="chart-container">
+        <label className="title">
+          Real-time sentiments&nbsp;
+          <span className="info-icon" data-tip data-for="realtime-t-tip" />
+          <ReactTooltip id="realtime-t-tip" place="top" type="dark" effect="solid">
+            <p>
+              The diagram shows a cumulative number of negative and positive tweets
+              for the selected movies as well as a "social power" of Twitter users
+              contributed there. Social power is a number of followers a user has.
+              Business accounts like News papers, Cinema etc typically have dozens of
+              thousands followers while normal user (probably you) typically has less
+              than 500 followers.
+            </p>
+          </ReactTooltip>
+          <ChartLegendMobile typeChart="stacked_extended" />
+        </label>
+        <div className="chart-box">
+          <div className="chart">
+            <Line
+              ref='chart'
+              data={ this.chartDataset }
+              options={ options }
+            />
+          </div>
+          <div className="legend">
+            <ChartLegend typeChart="stacked_extended"/>
+          </div>
+        </div>
       </div>
     );
   }
@@ -96,7 +123,8 @@ class RealtimeChart extends Component {
 function mapStateToProps(state) {
   return {
     movieId: state.movieList.selected,
-    statistic: state.statistic.statistic
+    statistic: state.statistic.statistic,
+    viewport: state.viewport
   };
 }
 

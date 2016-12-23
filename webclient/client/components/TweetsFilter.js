@@ -48,10 +48,10 @@ class TweetsFilter extends Component {
       filterLabel = <span className="tweets-filter-label">stream</span>;
     } else {
       filterLabel = <div>
-                <span className="tweets-filter-label">
-                    from { moment(selectFilter.fromTs, 'X').format(DATE_DAY_TIME) } to { moment(selectFilter.toTs, 'X').format(DATE_DAY_TIME) }
-                </span>
-        <div className="tweets-filter-reset" title="Reset point" onClick={ this.resetPoint.bind(this) }>X</div>
+        <span className="tweets-filter-label">
+          { moment(selectFilter.fromTs, 'X').format(DATE_DAY_TIME) } / { moment(selectFilter.toTs, 'X').format(DATE_DAY_TIME) }
+        </span>
+        <div className="tweets-filter-reset" title="Reset point" onClick={ this.resetPoint.bind(this) }></div>
       </div>;
     }
 

@@ -19,6 +19,7 @@ var error = require('./debug').error('server');
 
 var mainConfig = require('./main.config');
 var path = require('path');
+var fs = require('fs');
 
 //import port number from configuration file
 var port = mainConfig.webServer.port;
@@ -46,16 +47,21 @@ var IoController = require('./controllers/io.controller');
 //run socket io controller
 new IoController(io);
 
-if(mainConfig.webServer.isProdMode){
+var getIndexContent = function () {
+  var indexFile = path.resolve('server/dist/index.html');
+  return fs.readFileSync(indexFile, 'utf8');
+};
+
+if (mainConfig.webServer.isProdMode) {
   //set route for assets
   app.get('/virtual/*', function (req, res) {
-    res.sendFile(path.resolve('server/dist/'+req.params[0]));
+    res.sendFile(path.resolve('server/dist/' + req.params[0]));
   });
   //set route for web site base path
   app.get('/', function (req, res) {
     res.sendFile(path.resolve('server/dist/index.html'));
   });
-}else {
+} else {
   //import and set webpack
   var webpack = require('webpack');
   var webpackDevMiddleware = require('webpack-dev-middleware');
@@ -66,10 +72,39 @@ if(mainConfig.webServer.isProdMode){
   app.use(webpackHotMiddleware(compiler));
   //set route for web site base path
   app.get('/', function (req, res) {
-    var filename = path.join(compiler.outputPath,'index.html');
+    var filename = path.join(compiler.outputPath, 'index.html');
     var content = compiler.outputFileSystem.readFileSync(filename);
     res.setHeader('Content-Type', 'text/html; charset=UTF-8');
     res.setHeader('Content-Length', content.length);
     res.send(content);
   });
+  getIndexContent = function () {
+    var filename = path.join(compiler.outputPath, 'index.html');
+    return compiler.outputFileSystem.readFileSync(filename);
+  };
 }
+
+function getJsFilesNames() {
+  var content = getIndexContent();
+  var re = /<script\b[^>]*>([\s\S]*?)<\/script>/g;
+  var reSrc = /src\=\"(.*?)\"/i;
+
+  var result = [];
+  var matches = content.toString().match(re);
+  for (var i = 0; i < matches.length; i++) {
+    var tagScript = matches[i];
+    var srcMatch = reSrc.exec(tagScript);
+    if (srcMatch)
+      result.push(srcMatch[1]);
+  }
+  return result;
+}
+
+app.get('/inStreamLoader.js', function (req, res) {
+  var fileNames = getJsFilesNames();
+  var script = fs.readFileSync(path.resolve('server/inStreamLoader.js'), 'utf8');
+  script = `var scriptFiles = ${JSON.stringify(fileNames)};\n${script}`;
+  res.setHeader('Content-Type', 'text/javascript; charset=UTF-8');
+  res.setHeader('Content-Length', script.length);
+  res.send(script);
+});

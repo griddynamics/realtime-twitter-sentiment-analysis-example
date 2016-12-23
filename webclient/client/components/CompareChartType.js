@@ -15,6 +15,13 @@
  */
 import React, {Component} from 'react';
 
+const chartTypes = [
+  { name: 'Stacked area', value: 'line_all' },
+  { name: 'Stacked area (positive/negative only)', value: 'line' },
+  { name: 'Stacked bar', value: 'bar' },
+  { name: 'Bubble', value: 'bubble' }
+];
+
 /**
  * ChartType component drows radio group for change diagram type to comparison
  */
@@ -22,6 +29,47 @@ class ChartType extends Component {
 
   constructor(props, context) {
     super(props, context);
+
+    this.state = {
+      opened: false
+    };
+  }
+
+  handleClick(event) {
+    if (this.state.opened) {
+      let parent = this.refs.dropdown;
+      let target = event.target;
+      let inserted = parent.contains(target);
+
+      if (!inserted) {
+        this.closeList();
+      }
+    }
+  }
+
+  componentWillMount() {
+    document.addEventListener('click', this.handleClick.bind(this), false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleClick.bind(this), false);
+  }
+
+  checkMovie(event) {
+    this.props.selectMovie(event.currentTarget.dataset.value);
+    this.closeList();
+  }
+
+  openList() {
+    this.setState({opened: true});
+  }
+
+  closeList() {
+    this.setState({opened: false});
+  }
+
+  toggleList() {
+    this.setState({opened: !this.state.opened});
   }
 
 /**
@@ -29,67 +77,40 @@ class ChartType extends Component {
  * @param  {Object} evnt
  */
   selectChartType(evnt) {
-    this.props.selectChartType(evnt.target.value);
+    this.props.selectChartType(evnt.currentTarget.dataset.value);
+    this.closeList();
   }
 
   render() {
-    const selected = this.props.selectedChartType;
+    let selected = chartTypes[0];
+    const { opened } = this.state;
+
+    chartTypes.forEach((el) => {
+      if (el.value === this.props.selectedChartType) {
+        selected = el;
+      }
+    })
 
     return (
-      <div>
-        <h2>Select the chart type</h2>
-        <div className="half-block">
-          <ul className="chart-type-list">
-            <li>
-              <label className="label">
-                <input
-                  type="radio"
-                  checked={ selected == 'line_all' }
-                  name="type-list"
-                  value="line_all"
-                  onChange={ this.selectChartType.bind(this) }
-                />
-                <span className="right">Stacked area</span>
-              </label>
-            </li>
-            <li>
-              <label className="label">
-                <input
-                  type="radio"
-                  checked={ selected == 'line' }
-                  name="type-list"
-                  value="line"
-                  onChange={ this.selectChartType.bind(this) }
-                />
-                <span className="right">Stacked area (positive/negative only)</span>
-              </label>
-            </li>
-            <li>
-              <label className="label">
-                <input
-                  type="radio"
-                  checked={ selected == 'bar' }
-                  name="type-list"
-                  value="bar"
-                  onChange={ this.selectChartType.bind(this) }
-                />
-                <span className="right">Stacked bar</span>
-              </label>
-            </li>
-            <li>
-              <label className="label">
-                <input
-                  type="radio"
-                  checked={ selected == 'bubble' }
-                  name="type-list"
-                  value="bubble"
-                  onChange={ this.selectChartType.bind(this) }
-                />
-                <span className="right">Bubble</span>
-              </label>
-            </li>
-          </ul>
+      <div className="chart_types-selector" ref="dropdown">
+        <div className="input" onClick={ this.toggleList.bind(this) }>
+          <span className="input-selected">{ selected.name }</span>
+          <span className="input-icon"></span>
         </div>
+        <ul className={ opened ? 'list' : 'list close'}>
+          {chartTypes.map((el) => (
+            <li
+              className="list-item"
+              key={ el.value }
+              onClick={ this.selectChartType.bind(this) }
+              data-value={ el.value }
+            >
+              <span className={ selected.value === el.value ? 'item-name checked' : 'item-name' }>
+                { el.name }
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }

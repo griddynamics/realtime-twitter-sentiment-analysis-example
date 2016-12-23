@@ -17,6 +17,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import moment from 'moment';
 import {DATE_DAY_TIME_TEXT} from '../constants/Variable';
+import ReactTooltip from '../vendor/react-tooltip';
 
 /**
  * LiveStatistic component for rendering Totel live statistic panel on bottom page
@@ -28,11 +29,22 @@ class LiveStatistic extends Component {
 
   render() {
     var {totalStatSum} = this.props;
+    var stylePos = {left: 1};
     return (
-      <div className="statistic-1">
-        <label className="statistic-title">Total tweets received starting {moment(totalStatSum.timestamp,'X').format(DATE_DAY_TIME_TEXT)}: </label>
-        <div className="rts-line"><span className="positive-count">positive:</span> {totalStatSum.tweetCounterPositive}</div>
-        <div className="rts-line"><span className="negative-count">negative:</span> {totalStatSum.tweetCounterNegative}</div>
+      <div className="statistic">
+        <label className="mobile-statistic-title">
+          <span className="info-icon-gray" data-tip data-for="statistic-t-tip" />
+          <ReactTooltip id="statistic-t-tip" place="right" type="dark" effect="solid" >
+            <p>
+              Total tweets received starting {moment(totalStatSum.timestamp,'X').format(DATE_DAY_TIME_TEXT)}
+            </p>
+          </ReactTooltip>
+        </label>
+        <div className="statistic-wrapper">
+          <label className="statistic-title">Total tweets received starting {moment(totalStatSum.timestamp,'X').format(DATE_DAY_TIME_TEXT)} </label>
+          <div className="rts-line"><span className="positive-count">&nbsp;</span> {totalStatSum.tweetCounterPositive}</div>
+          <div className="rts-line"><span className="negative-count">&nbsp;</span> {totalStatSum.tweetCounterNegative}</div>
+        </div>
       </div>
     );
   }
@@ -40,7 +52,8 @@ class LiveStatistic extends Component {
 
 function mapStateToProps(state) {
   return {
-    totalStatSum: state.statistic.totalStatSum
+    totalStatSum: state.statistic.totalStatSum,
+    viewport: state.viewport
   };
 }
 

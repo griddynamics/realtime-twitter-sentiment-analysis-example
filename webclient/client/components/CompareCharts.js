@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Line, Bar, Bubble } from '../vendor/react-chartjs2/Chart';
 import ChartHelper from '../helpers/ChartHelper';
 import ChartLegend from '../components/ChartLegend';
+import ChartLegendMobile from '../components/ChartLegendMobile';
+import ReactTooltip from '../vendor/react-tooltip';
 
 /**
  * CompareCharts component draws two diagrams for comparison
@@ -55,14 +58,14 @@ class CompareCharts extends Component {
       let changed = false;
       let oldLen = this.props.movieDataMap.movieDataMap ? Object.keys(this.props.movieDataMap.movieDataMap).length : 0;
       let newLen = nextProps.movieDataMap ? Object.keys(nextProps.movieDataMap).length : 0;
-      if(oldLen != newLen){
+      if (oldLen != newLen) {
         changed = true;
       }
-      for(let movieId in this.props.movieDataMap){
-        if(!nextProps.movieDataMap[movieId]){
+      for (let movieId in this.props.movieDataMap) {
+        if (!nextProps.movieDataMap[movieId]) {
           changed = true;
           break;
-        }else{
+        } else {
           let oldData = this.props.movieDataMap[movieId];
           let newData = nextProps.movieDataMap[movieId];
           let nextlastIndex = newData.length - 1;
@@ -76,7 +79,7 @@ class CompareCharts extends Component {
           }
         }
       }
-      if(JSON.stringify(this.props.selectedMovies) !== JSON.stringify(nextProps.selectedMovies)){
+      if (JSON.stringify(this.props.selectedMovies) !== JSON.stringify(nextProps.selectedMovies)) {
         changed = true;
       }
       return changed;
@@ -144,89 +147,108 @@ class CompareCharts extends Component {
     let legendType = 'stacked_extended';
     let dataKeys = Object.keys(this.props.movieDataMap);
 
-    for (let i = 0; i < this.chartHelper.length; i++) {
+    this.chartHelper.forEach((helper, i)=> {
       let template = '';
       let ref = `chart${i}`;
       let options = {};
       let title = this.props.selectedMovies[i] || '';
 
-      switch(this.props.selectedChartType) {
+      switch (this.props.selectedChartType) {
         case 'line':
-          options = this.chartHelper[i].getLineOptions();
+          options = this.props.viewport.isMobile ?
+            helper.getLineMobileOptions() :
+            helper.getLineOptions();
+
           options.title.text = title;
 
           template = <Line
-            ref={ ref }
-            data={ this.chartHelper[i].datasetLine() }
-            options={ options }
-          />;
+              ref={ ref }
+              data={ helper.datasetLine() }
+              options={ options }
+            />;
 
           legendType = 'stacked';
           break;
         case 'line_all':
-          options = this.chartHelper[i].getLineOptions();
+          options = this.props.viewport.isMobile ?
+            helper.getLineMobileOptions() :
+            helper.getLineOptions();
+
           options.title.text = title;
 
           template = <Line
-            ref={ ref }
-            data={ this.chartHelper[i].datasetLineLayers() }
-            options={ options }
-          />;
+              ref={ ref }
+              data={ helper.datasetLineLayers() }
+              options={ options }
+            />;
 
           legendType = 'stacked_extended';
           break;
         case 'bar':
-          options = this.chartHelper[i].getBarOptions();
+          options = this.props.viewport.isMobile ?
+            helper.getBarMobileOptions() :
+            helper.getBarOptions();
+
           options.title.text = title;
 
           template = <Bar
-            ref={ ref }
-            data={ this.chartHelper[i].datasetBar() }
-            options={ options }
-          />;
+              ref={ ref }
+              data={ helper.datasetBar() }
+              options={ options }
+            />;
 
           legendType = 'stacked_extended';
           break;
         case 'bubble':
-          options = this.chartHelper[i].getBubbleOptions();
+          options = this.props.viewport.isMobile ?
+            helper.getBubbleMobileOptions() :
+            helper.getBubbleOptions();
+
           options.title.text = title;
+
           template = <Bubble
-            ref={ ref }
-            data={ this.chartHelper[i].datasetBubble() }
-            options={ options }
-          />;
+              ref={ ref }
+              data={ helper.datasetBubble() }
+              options={ options }
+            />;
 
           legendType = 'bubble_only';
           break;
       }
 
       charts.push(template);
-    }
+    });
 
     return (
-      <div className="flex-grow chart-content-col">
-        <div className="flex-half">
-          <div className="chart-content flex-grow">
+      <div className="compare-container">
+        <div className="box">
+          <div className="chart-container">
+            <label className="title">
+              { this.props.selectedMovies[0] || '…'}
+              <ChartLegendMobile typeChart={ legendType } />
+            </label>
             <div className="chart-box">
-              <div className="absolute-box">
+              <div className="chart">
                 { charts[0] }
               </div>
-            </div>
-            <div className="legend-box">
-              <ChartLegend typeChart={ legendType } />
+              <div className="legend">
+                <ChartLegend typeChart={ legendType }/>
+              </div>
             </div>
           </div>
         </div>
-
-        <div className="flex-half">
-          <div className="chart-content flex-grow">
+        <div className="box">
+          <div className="chart-container">
+            <label className="title">
+              { this.props.selectedMovies[1] || '…'}
+            </label>
             <div className="chart-box">
-              <div className="absolute-box">
+              <div className="chart">
                 { charts[1] }
               </div>
-            </div>
-            <div className="legend-box">
-              <ChartLegend typeChart={ legendType } />
+              <div className="legend">
+                <ChartLegend typeChart={ legendType }/>
+              </div>
             </div>
           </div>
         </div>
@@ -235,4 +257,12 @@ class CompareCharts extends Component {
   }
 }
 
-export default CompareCharts;
+function mapStateToProps(state) {
+  return {
+    viewport: state.viewport
+  };
+}
+
+export default connect(
+  mapStateToProps
+)(CompareCharts);

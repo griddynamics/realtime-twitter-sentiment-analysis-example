@@ -1,0 +1,72 @@
+.statistic
+  margin: 0 auto
+  position: fixed
+  background-color: rgba(255, 255, 255, 0.85)
+  box-sizing: border-box
+  bottom: 0
+  left: 0
+  right: 0
+  border-top: 1px solid $lighter
+  height: 40px
+  box-shadow: 0 1px 6px 0 rgba(0,0,0,0.3)
+  z-index: 150
+
+.statistic-wrapper
+  width: 650px
+  margin: 0 auto;
+
+.statistic-title
+  margin: 0 20px
+  font-size: 1.5em
+  line-height: 1.8
+
+.mobile-statistic-title
+  display: none
+  margin: 8px 20px
+  font-size: 1.5em
+  float: left
+
+.positive-count
+.negative-count
+  font-weight: 400
+  width: 18px
+  height: 18px
+  display: inline-block
+  border-left: 1px solid white
+  background-size: 95%
+  margin-right: 10px
+  background: url('./cc_icons/ico_social_finger_up.svg') 50% 50% no-repeat
+  line-height: 1
+
+.negative-count
+  background: url('./cc_icons/ico_social_finger_down.svg') 50% 50% no-repeat
+
+.rts-line
+  white-space: nowrap
+  display: inline-block
+  margin: 5px 10px
+  width: 70px
+  font-size: 1.3em
+  line-height: 1.5
+
+.rts-result
+  display: inline-block
+  padding: 0 5px
+  transition: background-color 0.3s
+
+@media (max-width: $mobile_width)
+  .statistic-title
+    display: none
+
+  .mobile-statistic-title
+    display: inline-block
+
+    .__react_component_tooltip.place-top:after
+      border-left: 8px solid transparent
+      border-right: 8px solid transparent
+      bottom: -6px
+      left: 30px
+      margin-left: -8px
+
+  .statistic-wrapper
+    width: 186px

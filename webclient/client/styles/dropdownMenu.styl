@@ -1,0 +1,105 @@
+.mobile-menu
+  display: none
+
+.desktop-menu
+  position: relative
+  z-index: 10
+  font-size: 1.5em
+
+  .menu-list
+    margin: 0
+    padding: 0
+    line-height: 2.5em
+    list-style: none
+    text-align: right
+    margin-right: 20px
+
+  .menu-list-item
+    display: inline-block
+    margin-left: 40px
+
+    a
+      color: white
+      text-decoration: none
+
+.social-links
+  list-style: none
+  margin: 40px 20px 0 20px
+  padding: 0
+
+  li
+    float: left
+    margin-right: 20px
+
+  a
+    width: 30px
+    height: 30px
+    display: block
+    background-size: cover !important
+
+  .facebook-ico
+    background: url('./cc_icons/ico_social_fb.svg') 50% 50% no-repeat
+
+  .tweeter-ico
+    background: url('./cc_icons/ico_social_twitter.svg') 50% 50% no-repeat
+
+  .linkedin-ico
+    background: url('./cc_icons/ico_social_linkedin.svg') 50% 50% no-repeat
+
+  .youtube-ico
+    background: url('./cc_icons/ico_social_youtube.svg') 50% 50% no-repeat
+
+  .google-ico
+    background: url('./cc_icons/ico_social_google.svg') 50% 50% no-repeat
+
+@media (max-width: $mobile_width)
+  .desktop-menu
+    display: none
+
+  .mobile-menu
+    display: block
+    position: relative
+    z-index: 10
+    font-size: 2em
+
+    .menu-icon
+      width: 50px
+      height: 50px
+      background: url('./cc_icons/ico_hamburger.svg') 50% 50% no-repeat
+      background-size: cover
+      right: 0
+      position: absolute
+
+    .menu
+      display: none
+      width: 100vw
+      background-color: $orange
+      margin: 0
+      padding-bottom: 20px
+      text-indent: 0
+      line-height: 1
+      font-size: 0.8em
+      font-weight: 600
+      box-shadow: 0 0 15px rgba(0,0,0,0.55)
+
+      &.opened
+        display: block
+
+    .menu-list
+      margin: 0
+      list-style: none
+      padding: 0
+
+    .menu-list-item
+      padding: 15px 10px 13px 20px
+      border-bottom: 1px solid rgba(255,255,255, 0.5)
+
+      &:last-child
+        border-bottom: none
+
+      a
+        text-decoration: none
+        color: white
+
+
+

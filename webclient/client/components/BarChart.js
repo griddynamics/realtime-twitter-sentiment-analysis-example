@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Bar } from '../vendor/react-chartjs2/Chart';
 import ChartHelper from '../helpers/ChartHelper';
+import ChartLegend from './ChartLegend';
+import ChartLegendMobile from '../components/ChartLegendMobile';
+import ReactTooltip from '../vendor/react-tooltip';
 
 /**
  * BarChart component to render Bar diagram
@@ -27,11 +31,13 @@ class BarChart extends Component {
 
     this.helper = new ChartHelper();
 
-    this.chartOption = this.helper.getBarOptions();
+    if (props.viewport.isMobile) {
+      this.chartOption = this.helper.getBarMobileOptions();
+    } else {
+      this.chartOption = this.helper.getBarOptions();
+    }
     this.chartDataset = this.helper.datasetBar();
     this.processData = this.helper.processBarLayersData;
-
-    this.chartOption.title.text = 'Stacked bar';
   }
 
   componentDidMount() {
@@ -93,15 +99,34 @@ class BarChart extends Component {
   render() {
 
     return (
-      <div className="absolute-box">
-        <Bar
-          ref='chart'
-          data={ this.chartDataset }
-          options={ this.chartOption }
-        />
+      <div className="chart-container">
+        <label className="title">
+          Stacked bar
+          <ChartLegendMobile typeChart="stacked_extended" />
+        </label>
+        <div className="chart-box">
+          <div className="chart">
+            <Bar
+              ref='chart'
+              data={ this.chartDataset }
+              options={ this.chartOption }
+            />
+          </div>
+          <div className="legend">
+            <ChartLegend typeChart="stacked_extended"/>
+          </div>
+        </div>
       </div>
     );
   }
 }
 
-export default BarChart;
+function mapStateToProps(state) {
+  return {
+    viewport: state.viewport
+  };
+}
+
+export default connect(
+  mapStateToProps
+)(BarChart);

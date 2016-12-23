@@ -16,23 +16,19 @@
 import {
   CALLBACK_GET_MOVIES_LIST,
   SELECT_MOVIE,
-
   SELECT_PERIOD,
-
   CALLBACK_MOVIE_DATA,
   CALLBACK_NEW_MOVIE_DATA,
-
   SELECT_MOVIES,
   CALLBACK_COMPARE_MOVIE_DATA,
   SELECT_CHART_TYPE,
   SELECT_POINT,
   RESET_POINT,
   CALLBACK_FULL_MOVIE_DATA_STATISTIC,
-
   CALLBACK_TWEETS_LINE,
   GET_STREAM_TWEETS,
-
-  CLEAN_DATA
+  CLEAN_DATA,
+  CALLBACK_VIEWPORT_CHANGED
 } from '../constants/ActionTypes';
 
 import { socket } from './ServerActions';
@@ -87,7 +83,19 @@ export function selectMovie(id) {
     });
   };
 }
-
+/* --------------- Viewport ------------ */
+/**
+ * Action generated when called callback after server send list of movies in response
+ * @param movies
+ * @returns {Function}
+ */
+export function callbackViewportChanged(viewstate, changed) {
+  return {
+      type: CALLBACK_VIEWPORT_CHANGED,
+      payload: viewstate,
+      changed: changed
+  }
+}
 /* ---------- Date Range ------------- */
 /**
  * Action will be called when user change date range

@@ -1,0 +1,91 @@
+.header-title
+  background: url('./cc_icons/logo.svg') 20px 50% no-repeat black
+  height: 50px
+  width: 100%
+
+.paragraf
+  float: left
+  width: 100%
+
+.section-1
+  width: calc(100% - 460px)
+  padding: 0 20px 10px 20px
+  box-sizing: border-box
+  float: left
+
+.section-2
+  text-align: center
+  padding: 50px 20px 10px 20px
+  float: right
+
+iframe
+  border-radius: 5px
+
+p
+  margin: 0
+  padding: 0
+  font-size: 1em
+
+.links-footer
+  float: left
+  width: auto
+
+.links-list
+  padding: 0
+  list-style: none
+
+.links-list-item
+  line-height: 1.5
+  position: relative
+  margin-bottom: 5px
+
+.links-list-item a
+  color: $dark_blue
+  cursor: pointer
+  font-weight: 400
+  line-height: 1.2
+  font-size: 1em
+  text-decoration: none
+  padding-left: 15px
+  display: block
+
+  &:before
+    position: absolute
+    left: 0
+    display: inline-block
+    content: "\2014"
+    width: 10px
+    height: 10px
+    color: $dark
+
+// --------------------------- mobile -----------------------
+
+@media (max-width: $mobile_width)
+
+  .title-first
+    padding: 15px 20px 10px
+    font-size: 1.4em
+    font-weight: 300
+    font-style: normal
+    font-stretch: normal
+    line-height: 1.0
+    text-transform: uppercase
+
+    strong
+      font-weight: 600
+
+  .section-1
+    width: 100%
+    padding: 0 20px 10px
+
+    &:after
+      content: ""
+      display: table
+      clear: both
+
+  .section-2
+    text-align: center
+    padding: 20px
+    float: none
+
+

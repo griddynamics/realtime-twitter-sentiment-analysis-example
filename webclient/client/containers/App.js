@@ -19,7 +19,6 @@ import {connect} from 'react-redux';
 
 import LandingPage from '../components/LandingPage';
 
-import MovieList from '../components/MovieList';
 import DateRange from '../components/DateRange';
 import RealtimeChart from '../components/RealtimeChart';
 import LiveStatistic from '../components/LiveStatistic';
@@ -32,16 +31,20 @@ import BubbleChart from '../components/BubbleChart';
 
 import ReactTooltip from '../vendor/react-tooltip';
 
-import CompareList from '../components/CompareList';
 import CompareCharts from '../components/CompareCharts';
 import ChartType from '../components/CompareChartType';
+import ShareWith from '../components/ShareWith';
 
 import TweetsLine from '../components/TweetsLine';
 import TweetsFilter from '../components/TweetsFilter';
 
 import ChartLegend from '../components/ChartLegend';
+import ChartLegendMobile from '../components/ChartLegendMobile';
 
 import * as pageActions from '../actions/PageActions';
+
+import DropdownList from '../components/DropdownList';
+import DropdownMultiList from '../components/DropdownMultiList';
 
 class App extends Component {
 
@@ -76,7 +79,8 @@ class App extends Component {
 
     } = this.props.pageActions;
 
-    const {dateRange} = this.props;
+    const { dateRange } = this.props;
+
     let selectFilter = {
       fromTs: tweetsLine.fromTs,
       toTs: tweetsLine.toTs
@@ -84,31 +88,44 @@ class App extends Component {
 
     return (
       <div className="main">
-
-
-        <div className="flexChild columnParent frame">
-          <LandingPage />
-        </div>
-
-
-        <div className="frame">
-          <div className="container">
-            <div className="side">
-              <div id="movie-list" className="block">
-                <label className="title">Movies</label>
-                <MovieList
+        <LandingPage />
+        <div className="block">
+          <div className="title-first"><strong>Real-time/Historical</strong> sentiments</div>
+          <div className="content realtime-screen">
+            <div className="left-side">
+              <div className="box">
+                <DropdownList
                   movies={ movies }
-                  getMovieList={ getMovieList }
+                  getItemsList={ getMovieList }
                   selectMovie={ selectMovie }
                   selected={ selected }
                 />
+                <DateRange
+                  dateRange={ dateRange }
+                  selectPeriod={ selectPeriod }
+                />
               </div>
-              <div className="block flex-grow">
-                <label className="title ">
-                  Tweets
-                  <span className="glyphicon glyphicon-question-sign tooltip" data-tip data-for="period-t-tip" />
-                  <ReactTooltip id="period-t-tip" place="top" type="dark" effect="solid">
-                    Click the "historical data" diagram <br/> on the right to see filtered tweets<br/> for the clicked area. Click the "cross"<br/>to revert to the live stream.
+              <div className="box">
+                <RealtimeChart
+                  getStreamTweets={ getStreamTweets }
+                />
+              </div>
+              <div className="box">
+                <HistoryChart
+                  movieData={ movieData }
+                  selectPoint={ selectPoint }
+                  movieId={ selected }
+                />
+              </div>
+            </div>
+            <div className="right-side box">
+              <div className="wrapper clearfix">
+                <label className="title">Tweets&nbsp;
+                  <span className="info-icon" data-tip data-for="tweets-t-tip" />
+                  <ReactTooltip id="tweets-t-tip" place="top" type="dark" effect="solid">
+                    <p>
+                      Click the "historical sentiments" diagram on the left to see filtered tweets for the clicked area. Click the cross-sign to revert to the live stream mode.
+                    </p>
                   </ReactTooltip>
                 </label>
                 <TweetsFilter
@@ -122,148 +139,61 @@ class App extends Component {
                 />
               </div>
             </div>
-            <div className="content">
-              <div className="block flex-half">
-                <label className="title">
-                  Real-time sentiments (updates every 5 secs)
-                  <span className="glyphicon glyphicon-question-sign tooltip" data-tip data-for="realtime-t-tip" />
-                  <ReactTooltip id="realtime-t-tip" place="top" type="dark" effect="solid">
-                    <p>
-                      The diagram shows a cumulative number of negative and positive tweets<br/>
-                      for the selected movies as well as a "social power" of Twitter users<br/>
-                      contributed there. Social power is a number of followers a user has.<br/>
-                      Business accounts like News papers, Cinema etc typically have dozens of<br/>
-                      thousands followers while normal user (probably you) typically has less<br/>
-                      than 500 followers.
-                    </p>
-                  </ReactTooltip>
-                </label>
-                <div className="chart-content flex-grow">
-                  <div className="chart-box">
-                    <RealtimeChart
-                      getStreamTweets={ getStreamTweets }
-                    />
-                  </div>
-                  <div className="legend-box">
-                    <ChartLegend typeChart="stacked_extended" />
-                  </div>
-                </div>
+          </div>
+        </div>
+        <div className="block">
+          <div className="title-first"><strong>Charts</strong> types</div>
+          <div className="content charts-types">
+            <div className="box">
+              <span className="description">Check what chart is most meaningful for the movie sentiments</span>
+              <DateRange
+                dateRange={ dateRange }
+                selectPeriod={ selectPeriod }
+              />
+            </div>
+            <div className="box-container">
+              <div className="box">
+                <LineLayersChart movieData={ movieData }/>
               </div>
-              <div className="block flex-half">
-                <div>
-                  <label className="title">Historical sentiments</label>
-                  <DateRange
-                    dateRange={ dateRange }
-                    selectPeriod={ selectPeriod }
-                  />
-                </div>
-                <div className="chart-content flex-grow">
-                  <div className="chart-box">
-                    <HistoryChart
-                      movieData={ movieData }
-                      selectPoint={ selectPoint }
-                      movieId={ selected }
-                    />
-                  </div>
-                  <div className="legend-box">
-                    <ChartLegend typeChart="stacked_extended" />
-                  </div>
-                </div>
+              <div className="box">
+                <LineChart movieData={ movieData }/>
+              </div>
+              <div className="box">
+                <BarChart movieData={ movieData }/>
+              </div>
+              <div className="box">
+                <BubbleChart movieData={ movieData }/>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="flexChild columnParent frame block">
-          <div className="flexChild flexFixed">
-            <label className="title">Check what chart is most meaningful for the movie sentiments:</label>
-            <DateRange
-              dateRange={ dateRange }
-              selectPeriod={ selectPeriod }
-            />
-          </div>
-          <div className="flexChild rowParent flexFlow">
-            <div className="flexChild columnParent">
-              <div className="flexChild rowParent">
-                <div className="flexChild flexFlow">
-                  <LineLayersChart
-                    movieData={ movieData }
-                  />
-                </div>
-                <div className="flexChild flexFixed align-center">
-                  <ChartLegend typeChart="stacked_extended" />
-                </div>
-              </div>
-              <div className="flexChild rowParent">
-                <div className="flexChild flexFlow">
-                  <BarChart
-                    movieData={ movieData }
-                  />
-                </div>
-                <div className="flexChild flexFixed align-center">
-                  <ChartLegend typeChart="stacked_extended" />
-                </div>
-              </div>
-            </div>
-            <div className="flexChild columnParent">
-              <div className="flexChild rowParent">
-                <div className="flexChild flexFlow">
-                  <LineChart
-                    movieData={ movieData }
-                  />
-                </div>
-                <div className="flexChild flexFixed align-center">
-                  <ChartLegend typeChart="stacked" />
-                </div>
-              </div>
-              <div className="flexChild rowParent">
-                <div className="flexChild flexFlow">
-                  <BubbleChart
-                    movieData={ movieData }
-                  />
-                </div>
-                <div className="flexChild flexFixed align-center">
-                  <ChartLegend typeChart="bubble_only" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-        <div className="frame">
-          <div className="container">
-            <div className="block side">
-              <label className="title">Compare options</label>
-              <CompareList
+        <div className="block">
+          <div className="title-first"><strong>Difference in</strong> patterns</div>
+          <div className="content difference-patterns">
+            <div className="box">
+              <DropdownMultiList
                 movies={ movies }
-                selectedMainMovie={ selected }
                 selectMoviesToCompare={ selectMoviesToCompare }
                 selected={ selectedMovies }
                 dateRange={ dateRange }
               />
-              <br/>
               <ChartType
                 selectedChartType={ selectedChartType }
                 selectChartType={ selectChartType }
               />
-            </div>
-            <div className="content block">
-              <div>
-                <label className="title">Check for difference in patterns</label>
-                <DateRange
-                  dateRange={ dateRange }
-                  selectPeriod={ selectPeriod }
-                />
-              </div>
-              <CompareCharts
-                movieDataMap={ movieDataMap }
-                selectedChartType={ selectedChartType }
-                selectedMovies={ selectedMovies }
+              <DateRange
+                dateRange={ dateRange }
+                selectPeriod={ selectPeriod }
               />
             </div>
+            <CompareCharts
+              movieDataMap={ movieDataMap }
+              selectedChartType={ selectedChartType }
+              selectedMovies={ selectedMovies }
+            />
           </div>
         </div>
+        <ShareWith/>
         <LiveStatistic />
       </div>
     );

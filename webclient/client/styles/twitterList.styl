@@ -1,0 +1,90 @@
+.tweets-list
+  list-style: none
+  padding: 0
+  overflow: auto
+  position: absolute
+  top: 40px
+  bottom: 0
+  left: 20px
+  right: 20px
+
+.tweet-item
+  border-radius: 5px
+  margin: 0 0 5px
+  overflow: hidden
+
+.tweet-title
+  width: 100%
+  background-color: rgba(255,255,255, 0.3)
+  line-height: 1.8
+  color: black
+
+.tweet-icon
+  background: url('./cc_icons/ico_social_twitter.svg') 50% 50% no-repeat $dark_blue
+  background-size: 90%
+  border-radius: 4px
+  width: 20px
+  height: 20px
+  margin: 3px
+  display: inline-block
+  float: left
+
+.tweet-user
+  display: inline-block
+  float: left
+  opacity: 0.6
+
+.tweet-date
+  display: inline-block
+  float: right
+  margin-right: 10px
+  opacity: 0.6
+
+.tweet-text
+  padding: 10px 7px 7px
+  display: block
+  font-weight: 300
+
+.tweet-item.negative
+  background-color: $negative
+
+.tweet-item.positive
+  background-color: $positive
+
+.expand-tweets
+  display: none
+
+
+@media (max-width: $mobile_width)
+  .tweets-list
+    position: relative
+    left: 0
+    top: 0
+    right: 0
+    width: 100%
+    overflow: hidden
+    height: 100px
+
+  .tweet-item
+    height: 100%
+
+  .tweet-text
+    overflow: hidden
+    text-overflow: ellipsis
+
+  .expand-tweets
+    display: block
+    width: 100%
+    height: 30px
+    background: url('./cc_icons/ico_arrow_down.svg') 50% 50% no-repeat
+
+  .expanded
+    .tweets-list
+      overflow: scroll
+      height: calc(100vh - 135px)
+
+    .tweet-item
+      height: auto
+
+    .expand-tweets
+      transform rotate(180deg)

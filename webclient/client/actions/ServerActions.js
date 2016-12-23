@@ -22,7 +22,7 @@ import {
   callbackFullMovieDataStatistic
 } from './PageActions';
 
-export const socket = window.io();
+export const socket = window.io(window.socketIoUrl);
 
 export function init(store) {
   /**

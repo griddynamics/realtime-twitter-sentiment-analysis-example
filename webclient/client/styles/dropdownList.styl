@@ -1,0 +1,92 @@
+.dropdown
+  position: relative
+  width: calc(100% - 190px)
+  background-color: white
+  height: 2.5rem
+  overflow: visible
+  font-size: 1.2em
+  line-height: 2.5
+  letter-spacing: -0.1px
+  float: left
+  color: $gray
+  border-radius: 5px
+  z-index: 101
+
+  &.multiselect
+    width: calc(100% - 390px)
+
+  .input
+    width: 100%
+    height: 100%
+    color: $dark_blue
+    cursor: pointer
+    border-bottom: 1px solid $light
+
+  span
+    display: inline-block
+    height: 100%
+    float: left
+
+  .chevron
+    background: url('./cc_icons/ico_arrow_down.svg') 100% 50% no-repeat
+
+  .checked
+    background: url('./cc_icons/ico_checked.svg') 100% 50% no-repeat
+
+  .item-check
+    width: 39px
+    height: 100%
+    text-align: center
+
+  .item-name
+    width: calc(50% - 39px)
+    overflow: hidden
+    text-overflow: ellipsis
+    text-indent: 5px
+
+    &.strong
+      font-weight: 600
+
+  &.multiselect
+    .item-name
+      width: calc(100% - 39px)
+
+    .list-item label
+      cursor: pointer
+
+  .item-imdb
+  .item-release
+    width: 25%
+    font-weight: 300
+    color: $dark
+
+  .close
+    height: 0
+
+  .list
+    list-style: none
+    margin: 0
+    padding: 0
+    background-color: $white
+    overflow: hidden
+    box-shadow: 0 5px 15px -5px black
+    transition height 0.3s
+
+  .list-item
+    border-bottom: 1px solid $lighter
+    height: 2rem
+    line-height: 2
+    cursor: pointer
+
+    .hidden
+      opacity: 0
+
+@media (max-width: $mobile_width)
+  .dropdown
+    width: 100%
+    float: none
+
+    &.multiselect
+      width: 100%
+
+

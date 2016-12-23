@@ -183,7 +183,7 @@ class TweetMessage {
      */
   static getLastTweets(movieId) {
     let from = parseInt(moment().format('X')) - MAX_PROCESSING_TIME;
-    let to = parseInt(moment().format('X'));
+    let to = parseInt(moment().format('X'))+3600;
 
     if (timelineLastElement[movieId]) {
       from = timelineLastElement[movieId].createTime;
@@ -206,7 +206,7 @@ class TweetMessage {
                   if (row) {
                     let obj = {
                       id: row.id,
-                      createTime: parseInt(moment(row.date + 'T' + row.time + '+00:00').format('X')),
+                      createTime: parseInt(moment(row.date + 'T' + row.time + '+00:00').format('X'))
                     };
                     if(!timelineLastIds[movieId] || !timelineLastIds[movieId][obj.id]) {
                       idsList.push(obj);

@@ -1,0 +1,38 @@
+.chart-container
+  .title
+    text-align: center
+
+.chart
+  width: calc(100% - 110px)
+  float: left
+  height: 250px
+  padding: 0 10px 20px 20px
+  box-sizing: border-box
+
+.__react_component_tooltip
+  padding: 0 !important
+  box-sizing: border-box
+  text-align: left
+
+  p
+    font-size: 1.1em
+    font-weight: 300
+    padding: 10px
+    max-width: 450px
+
+@media (max-width: $mobile_width)
+  .chart-container
+    .title
+      text-align: left
+
+  .chart
+    width: 100%
+    float: none
+    height: 150px
+    padding: 10px 5px 20px 5px
+
+  .rc-calendar-range
+    width: 253px
+
+  .__react_component_tooltip p
+    max-width: 50vw

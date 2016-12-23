@@ -79,9 +79,7 @@ class ChartHelper {
         display: false
       },
       title: {
-        display: true,
-        position: 'top',
-        text: ''
+        display: false
       },
       scales: {
         xAxes: [{
@@ -114,7 +112,88 @@ class ChartHelper {
           ticks: {
             beginAtZero: true,
             callback: function (value) {
-              return value < 0 ? Math.abs(value) : value;
+              return ChartHelper.formatTick(value);
+            },
+            stepSize: 1
+          },
+          gridLines: {
+            zeroLineWidth: 1,
+            zeroLineUpperLayer: true,
+            zeroLineColor: "rgba(0, 0, 0, 1)"
+          }
+        }]
+      },
+      animation: false,
+      hover: {
+        mode: 'nearest',
+        intersect: true
+      },
+
+      tooltips: {
+        intersect: false,
+        callbacks: {
+          label: function (tooltipItems) {
+            return Math.abs(tooltipItems.yLabel) || '0';
+          },
+          title: function (tooltipItems, config) {
+            var dataset = config.datasets[tooltipItems[0].datasetIndex];
+            return [dataset.label, moment(tooltipItems[0].xLabel, 'X').format(DATE_TIME)];
+          }
+        }
+      }
+    };
+  }
+
+  /**
+   * Return options for chart js with type line
+   * @returns {Object}
+   */
+  getLineMobileOptions() {
+    return {
+      maintainAspectRatio: false,
+      legend: {
+        display: false
+      },
+      title: {
+        display: false
+      },
+      layout: {
+        padding: 0
+      },
+      scales: {
+        xAxes: [{
+          mark: 'mobile',
+          display: false,
+          type: 'time',
+          position: 'bottom',
+          time: {
+            displayFormats: {
+              millisecond: 'HH:mm:ss',
+              second: 'HH:mm:ss',
+              minute: 'HH:mm',
+              hour: 'M/D/YY HH:mm',
+              day: 'M/D/YY',
+              week: 'M/D/YY',
+              month: 'M/D/YY',
+              quarter: '[Q]Q - YYYY',
+              year: 'YYYY'
+            },
+            parser: 'X'
+          },
+          ticks: {
+            maxTicksLimit: 7,
+            maxRotation: 35,
+            autoSkip: true,
+            fontSize: 10,
+            padding: 0
+          }
+        }],
+        yAxes: [{
+          stacked: true,
+          ticks: {
+            beginAtZero: true,
+            callback: function (value) {
+              return ChartHelper.formatTick(value);
             },
             stepSize: 1
           },
@@ -157,9 +236,7 @@ class ChartHelper {
         display: false
       },
       title: {
-        display: true,
-        position: 'top',
-        text: ''
+        display: false
       },
       scales: {
         xAxes: [{
@@ -185,7 +262,73 @@ class ChartHelper {
           ticks: {
             beginAtZero: true,
             callback: function (value) {
-              return Math.abs(value);
+              return ChartHelper.formatTick(value);
+            },
+            stepSize: 1
+          },
+          gridLines: {
+            zeroLineWidth: 1,
+            zeroLineUpperLayer: true,
+            zeroLineColor: "rgba(0, 0, 0, 1)"
+          }
+        }]
+      },
+      animation: false,
+      tooltips: {
+        enabled: true,
+        callbacks: {
+          label: function (tooltipItems) {
+            return Math.abs(tooltipItems.yLabel) || '0';
+          },
+          title: function (tooltipItems, config) {
+            var dataset = config.datasets[tooltipItems[0].datasetIndex];
+            return [dataset.label,tooltipItems[0].xLabel];
+          }
+
+        }
+      }
+    };
+  }
+
+  /**
+   * Return options for chart js with type bar
+   * @returns {Object}
+   */
+  getBarMobileOptions() {
+    return {
+      maintainAspectRatio: false,
+      legend: {
+        display: false
+      },
+      title: {
+        display: false
+      },
+      scales: {
+        xAxes: [{
+          stacked: true,
+          display: false,
+          ticks: {
+            maxTicksLimit: 7,
+            maxRotation: 35,
+            autoSkip: true,
+            fontSize: 10,
+            padding: 0,
+            callback: function (value, index, arr) {
+              let count = arr.length - 1;
+              let diff = parseInt(arr[count], 10) - parseInt(arr[0], 10);
+              let days = diff / (3600 * 24);
+              let format = (days <= 1) ? 'M/D/YY HH:mm' : 'M/D/YY';
+
+              return moment(value, 'X').format(format);
+            }
+          }
+        }],
+        yAxes: [{
+          stacked: true,
+          ticks: {
+            beginAtZero: true,
+            callback: function (value) {
+              return ChartHelper.formatTick(value);
             },
             stepSize: 1
           },
@@ -224,9 +367,7 @@ class ChartHelper {
         display: false
       },
       title: {
-        display: true,
-        position: 'top',
-        text: ''
+        display: false
       },
       scales: {
         xAxes: [{
@@ -258,6 +399,76 @@ class ChartHelper {
           stacked: true,
           ticks: {
             beginAtZero: true,
+            callback: function (value) {
+              return ChartHelper.formatTick(value);
+            },
+            stepSize: 1
+          }
+        }]
+      },
+      animation: false,
+      tooltips: {
+        enabled: true,
+        callbacks: {
+          label: function (tooltipItems) {
+            return tooltipItems.yLabel || '0';
+          },
+          title: function (tooltipItems, config) {
+            var dataset = config.datasets[tooltipItems[0].datasetIndex];
+            return [dataset.label, moment(tooltipItems[0].xLabel, 'X').format(DATE_SHORT)];
+          }
+        }
+      }
+    };
+  }
+
+  /**
+   * Return options for chart js with type bubble
+   * @returns {Object}
+   */
+  getBubbleMobileOptions() {
+    return {
+      maintainAspectRatio: false,
+      legend: {
+        display: false
+      },
+      title: {
+        display: false
+      },
+      scales: {
+        xAxes: [{
+          type: 'time',
+          position: 'bottom',
+          display: false,
+          time: {
+            displayFormats: {
+              millisecond: 'HH:mm:ss',
+              second: 'HH:mm:ss',
+              minute: 'HH:mm',
+              hour: 'M/D/YY HH:mm',
+              day: 'M/D/YY',
+              week: 'M/D/YY',
+              month: 'M/D/YY',
+              quarter: '[Q]Q - YYYY',
+              year: 'YYYY'
+            },
+            parser: 'X'
+          },
+          ticks: {
+            maxTicksLimit: 7,
+            maxRotation: 35,
+            autoSkip:true,
+            fontSize: 10,
+            padding: 0
+          }
+        }],
+        yAxes: [{
+          stacked: true,
+          ticks: {
+            beginAtZero: true,
+            callback: function (value) {
+              return ChartHelper.formatTick(value);
+            },
             stepSize: 1
           }
         }]
@@ -635,6 +846,17 @@ class ChartHelper {
     } else {
       return data;
     }
+  }
+
+  static formatTick(value){
+    value = value < 0 ? Math.abs(value) : value;
+    var strVal = value.toString();
+    if(strVal.indexOf('000000') !== -1){
+      strVal = strVal.slice(0, -6)+'m';
+    }else if(strVal.indexOf('000') !== -1) {
+      strVal = strVal.slice(0, -3) + 'k'
+    }
+    return strVal
   }
 }
 

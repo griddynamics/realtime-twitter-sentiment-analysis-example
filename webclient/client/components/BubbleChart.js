@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Bubble } from '../vendor/react-chartjs2/Chart';
 import ChartHelper from '../helpers/ChartHelper';
+import ChartLegend from './ChartLegend';
+import ChartLegendMobile from '../components/ChartLegendMobile';
+import ReactTooltip from '../vendor/react-tooltip';
 
 /**
  * BubbleChart component to render Bubble diagram
@@ -28,9 +32,13 @@ class BubbleChart extends Component {
     this.helper = new ChartHelper();
 
     this.chartOption = this.helper.getBubbleOptions();
+    if (props.viewport.isMobile) {
+      this.chartOption = this.helper.getBubbleMobileOptions();
+    } else {
+      this.chartOption = this.helper.getBubbleOptions();
+    }
     this.chartDataset = this.helper.datasetBubble();
     this.processData = this.helper.processBubbleLayersData;
-    this.chartOption.title.text = 'Bubble';
   }
 
   componentDidMount() {
@@ -87,15 +95,34 @@ class BubbleChart extends Component {
   render() {
 
     return (
-      <div className="absolute-box">
-        <Bubble
-          ref='chart'
-          data={ this.chartDataset }
-          options={ this.chartOption }
-        />
+      <div className="chart-container">
+        <label className="title">
+          Bubble
+          <ChartLegendMobile typeChart="bubble_only" />
+        </label>
+        <div className="chart-box">
+          <div className="chart">
+            <Bubble
+              ref='chart'
+              data={ this.chartDataset }
+              options={ this.chartOption }
+            />
+          </div>
+          <div className="legend">
+            <ChartLegend typeChart="bubble_only"/>
+          </div>
+        </div>
       </div>
     );
   }
 }
 
-export default BubbleChart;
+function mapStateToProps(state) {
+  return {
+    viewport: state.viewport
+  };
+}
+
+export default connect(
+  mapStateToProps
+)(BubbleChart);

@@ -270,8 +270,12 @@ module.exports = function(Chart) {
 				// Crude approximation of what the label length might be
 				var tempFirstLabel = me.tickFormatFunction(me.firstTick, 0, []);
 				var tickLabelWidth = me.ctx.measureText(tempFirstLabel).width;
-				var cosRotation = Math.cos(helpers.toRadians(me.options.ticks.maxRotation));
-				var sinRotation = Math.sin(helpers.toRadians(me.options.ticks.maxRotation));
+        var cosRotation = 0;
+        var sinRotation = 1;
+        if(me.options.display) {
+          cosRotation = Math.cos(helpers.toRadians(me.options.ticks.maxRotation));
+          sinRotation = Math.sin(helpers.toRadians(me.options.ticks.maxRotation));
+        }
 				tickLabelWidth = (tickLabelWidth * cosRotation) + (tickFontSize * sinRotation);
 				var labelCapacity = innerWidth / (tickLabelWidth);
 

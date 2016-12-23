@@ -1,0 +1,123 @@
+.legend-container
+  display: none
+
+.legend
+  float: right
+  width: 110px
+  padding: 0 20px 0 0
+  box-sizing: border-box
+
+.legend-bar
+  box-sizing: border-box
+  padding: 5px
+  border-radius: 4px
+  background-color: $lighter
+
+.legend-title
+  padding: 0
+  margin: 0 0 5px 0
+
+  h3
+    font-weight: 500
+
+  h4
+    font-weight: 400
+
+.colors
+  list-style: none
+  padding: 0
+  margin: 8px 5px
+
+  li
+    margin-bottom: 5px
+
+.color-block:before
+  content: ''
+  display: inline-block
+  position: relative
+  width: 10px
+  height: 10px
+  margin-right: 5px
+
+.color-positive.color-block:before
+  background-color: rgba(89, 195, 230, 0.99)
+.color-positive-low.color-block:before
+  background-color: rgba(177, 234, 241, 0.99)
+.color-positive-middle.color-block:before
+  background-color: rgba(89, 195, 230, 0.99)
+.color-positive-hight.color-block:before
+  background-color: rgba(29, 161, 242, 0.99)
+
+
+.color-negative.color-block:before
+  background-color: rgba(254, 151, 0, 0.99)
+.color-negative-low.color-block:before
+  background-color: rgba(254, 234, 58, 0.99)
+.color-negative-middle.color-block:before
+  background-color: rgba(254, 151, 0, 0.99)
+.color-negative-hight.color-block:before
+  background-color: rgba(254, 86, 33, 0.99)
+
+.size-block:before
+  content: ''
+  display: inline-block
+  position: relative
+  border-radius: 50%
+  background-color: $dark
+  vertical-align: middle
+  margin-right: 5px
+
+.size-low.size-block:before
+  width: 5px
+  height: 5px
+.size-middle.size-block:before
+  width: 10px
+  height: 10px
+.size-hight.size-block:before
+  width: 20px
+  height: 20px
+
+@media (max-width: $mobile_width)
+  .legend
+    display: none
+
+  .legend-container
+    display: block
+    position: absolute
+    top: 5px
+    right: 10px
+    overflow: hidden
+    width: 25px
+    height: 25px
+    font-size: 0.8em
+    font-weight: 300
+    z-index: 100
+
+    &.opened
+      overflow: visible
+      width: auto
+
+      .legend-box
+        box-shadow: 0 0 10px rgba(0,0,0,0.3)
+
+    .legend-box
+      background-color: white
+      border-radius: 5px
+      padding: 5px
+
+    .legend-icon
+      background: url('./cc_icons/ico_chart_description.svg') 50% 50% no-repeat white
+      background-size: cover
+      width: 25px
+      height: 25px
+      display: block
+      position: absolute
+      right: 0
+      top: 4px
+
+    .legend-body
+      margin-right: 30px
+      padding: 5px
+
+
+

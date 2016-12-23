@@ -1,0 +1,21 @@
+.compare-container
+    box-shadow: none
+
+    .box
+      width: calc(50% - 5px)
+      float: left
+      box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.16)
+
+      &:last-child
+        float: right
+
+@media (max-width: $mobile_width)
+  .compare-container
+    width: 100%
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.16)
+    background-color: white
+    overflow: hidden
+
+    .box
+      width: 100%
+      box-shadow: none

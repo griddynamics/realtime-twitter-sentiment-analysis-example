@@ -172,7 +172,7 @@ export default function (e, target, node, place, effect, offset) {
   const outsideRightResult = outsideRight()
   const outsideTopResult = outsideTop()
   const outsideBottomResult = outsideBottom()
-  console.log('place',place,'top',outsideTopResult,'right',outsideRightResult);
+  //console.log('place',place,'top',outsideTopResult,'right',outsideRightResult);
 
   if (place === 'left' && outsideLeftResult.result) {
     return {

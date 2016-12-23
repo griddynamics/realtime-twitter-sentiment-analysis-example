@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import { Line } from '../vendor/react-chartjs2/Chart';
 import ChartHelper from '../helpers/ChartHelper';
+import ChartLegend from './ChartLegend';
+import ChartLegendMobile from '../components/ChartLegendMobile';
+import ReactTooltip from '../vendor/react-tooltip';
 
 /**
  * LineLayersChart component to render Line layers diagram
@@ -27,10 +31,13 @@ class LineLayersChart extends Component {
 
     this.helper = new ChartHelper();
 
-    this.chartOption = this.helper.getLineOptions();
+    if (props.viewport.isMobile) {
+      this.chartOption = this.helper.getLineMobileOptions();
+    } else {
+      this.chartOption = this.helper.getLineOptions();
+    }
     this.chartDataset = this.helper.datasetLineLayers();
     this.processData = this.helper.processLineLayersData;
-    this.chartOption.title.text = 'Stacked area';
   }
 
   componentDidMount() {
@@ -91,15 +98,34 @@ class LineLayersChart extends Component {
   render() {
 
     return (
-      <div className="absolute-box">
-        <Line
-          ref='chart'
-          data={ this.chartDataset }
-          options={ this.chartOption }
-        />
+      <div className="chart-container">
+        <label className="title">
+          Stacked area
+          <ChartLegendMobile typeChart="stacked_extended" />
+        </label>
+        <div className="chart-box">
+          <div className="chart">
+            <Line
+              ref='chart'
+              data={ this.chartDataset }
+              options={ this.chartOption }
+            />
+          </div>
+          <div className="legend">
+            <ChartLegend typeChart="stacked_extended"/>
+          </div>
+        </div>
       </div>
     );
   }
 }
 
-export default LineLayersChart;
+function mapStateToProps(state) {
+  return {
+    viewport: state.viewport
+  };
+}
+
+export default connect(
+  mapStateToProps
+)(LineLayersChart);

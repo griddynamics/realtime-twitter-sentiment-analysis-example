@@ -56,8 +56,8 @@ var config = {
         include: clientDir
       },
       {
-        test: /\.css?$/,
-        loaders: ['style', 'css-loader', 'resolve-url', 'postcss'],
+        test: /\.styl|\.css?$/,
+        loaders: ['style', 'css-loader', 'resolve-url', 'stylus', 'postcss'],
         include: clientDir
       },
       {
@@ -66,8 +66,12 @@ var config = {
         include: path.join(path.resolve(__dirname + '/..'), 'node_modules')
       },
       {
-        test: /\.(png|ttf|eot|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        test: /\.(png|ttf|eot|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: 'file-loader'
+      },
+      {
+        test: /\.(svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'svg-url-loader'
       }
     ]
   },

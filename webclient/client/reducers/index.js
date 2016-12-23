@@ -20,6 +20,7 @@ import statistic from './Statistic';
 import movieData from './MovieData';
 import compareMovies from './CompareMovies';
 import tweetsLine from './TweetsLine';
+import viewport from './Viewport';
 
 const rootReducer = combineReducers({
   movieList,
@@ -27,7 +28,8 @@ const rootReducer = combineReducers({
   statistic,
   movieData,
   compareMovies,
-  tweetsLine
+  tweetsLine,
+  viewport
 });
 
 export default rootReducer;

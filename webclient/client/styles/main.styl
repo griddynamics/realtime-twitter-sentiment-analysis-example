@@ -1,0 +1,167 @@
+html,
+body
+  margin: 0
+  padding: 0
+
+body
+  font: 14px 'Source Sans Pro', sans-serif
+  font-weight: normal
+  font-style: normal
+  font-stretch: normal
+  line-height: 1em
+  background-color: $bg
+  color: $color_text
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  width: 100vw
+  box-shadow: 0 42px 0 0 $darker inset, 0 92px 0 0 black inset
+
+iframe
+  border: none
+
+p
+  font-size: 1.2em
+  line-height: 1.2
+
+.info-icon
+  background: url('./cc_icons/ico_info.svg') 100% 50% no-repeat
+  background-size: cover
+  width: 25px
+  height: 25px
+  display: inline-block
+  vertical-align: -7px
+
+.info-icon-gray
+  background: url('./cc_icons/ico_info_gray.svg') 100% 50% no-repeat
+  background-size: cover
+  width: 25px
+  height: 25px
+  display: inline-block
+  vertical-align: -7px
+
+.wrapper
+  padding: 10px 20px 20px
+  width: 100%
+  box-sizing: border-box
+
+  .title
+    padding: 0
+
+.title-first
+  padding: 20px 20px 15px
+  text-align: left
+  font-size: 1.6em
+  font-weight: 300
+  line-height: 1.0
+  text-transform: uppercase
+  background-color: $bg
+  max-width: 1024px
+  margin: 0 auto
+
+  strong
+    font-weight: 600
+
+.content
+  display: flex
+
+.difference-patterns
+  &.content
+    flex-direction: column
+
+.left-side
+  width: 60%;
+
+.right-side
+  width: 40%
+  margin-left: 10px !important
+
+.main
+  position: relative
+
+.clearfix
+  content: ""
+  display: table
+  clear: both
+
+.box:after
+  content: ""
+  display: table
+  clear: both
+
+.block
+  max-width: 1024px
+  position: relative
+  margin: 0 auto
+  box-sizing: border-box
+
+.box
+  max-width: 1024px
+  background-color: white
+  box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.16)
+  border-radius: 5px
+  position: relative
+  margin: 0 auto
+  box-sizing: border-box
+  margin: 0 0 10px 0
+
+.title-second
+  font-size: 1.2em
+  font-weight: 600
+  line-height: 1
+  margin: 20px 0 10px
+
+:focus
+  outline: 0
+
+.hidden
+  display: none
+
+.title
+  font-size: 1.2em
+  font-weight: 600
+  padding: 10px 10px 10px 10px
+  display: block
+
+h2
+  font-weight: 300
+  font-size: 1.35em
+  margin: 10px 0
+
+.tooltip
+  font-size: 18px
+  color: $light_blue
+  margin-left: 20px
+  cursor: pointer
+  transition: color 0.3s
+
+.tooltip:hover
+  color: $dark_blue
+
+@media (max-width: $mobile_width)
+  body
+    box-shadow: none
+
+  .content
+    display: block
+    width: 100%
+
+  .box
+    border-radius: 0
+
+  .left-side
+    width: 100%
+
+  .right-side
+    width: 100%
+    margin-left: 0 !important
+
+  .wrapper
+    padding-bottom: 0
+
+
+
+
+
+
+
+

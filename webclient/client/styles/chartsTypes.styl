@@ -1,0 +1,41 @@
+.charts-types
+  flex-direction: column
+
+  .description
+    padding: 10px 10px 10px 20px
+    display: inline-block
+    width: calc(100% - 190px)
+    box-sizing: border-box
+    font-size: 1.2em
+    line-height: 1.2
+
+  .box-container
+    width: 100%
+
+    .box
+      width: calc(50% - 5px)
+      display: inline-block
+
+      &:nth-child(even)
+        margin-left: 10px
+
+@media (max-width: $mobile_width)
+  .charts-types
+    width: 100%
+
+    .box-container
+      .box
+        width: 100%
+
+        &:nth-child(even)
+          margin-left: 0
+
+    .description
+      width: calc(100% - 180px)
+      font-size: 1em
+      padding: 10px
+
+    .date-picker
+      margin: 10px 10px 0 0
+
+

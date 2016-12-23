@@ -69,7 +69,8 @@ class ReactTooltip extends Component {
     afterHide: PropTypes.func,
     disable: PropTypes.bool,
     scrollHide: PropTypes.bool,
-    resizeHide: PropTypes.bool
+    resizeHide: PropTypes.bool,
+    stylePos: PropTypes.object
   };
 
   static defaultProps = {
@@ -96,7 +97,8 @@ class ReactTooltip extends Component {
       currentTarget: null, // Current target of mouse event
       ariaProps: parseAria(props), // aria- and role attributes
       isEmptyTip: false,
-      disable: false
+      disable: false,
+      stylePos: props.stylePos
     }
 
     this.bind([
@@ -399,8 +401,8 @@ class ReactTooltip extends Component {
       })
     }
     // Set tooltip position
-    node.style.left = result.position.left + 'px'
-    node.style.top = result.position.top + 'px'
+    node.style.left = ((this.state.stylePos && this.state.stylePos.left) ? this.state.stylePos.left : result.position.left) + 'px'
+    node.style.top = ((this.state.stylePos && this.state.stylePos.top) ? this.state.stylePos.top : result.position.top) + 'px'
   }
 
   /**

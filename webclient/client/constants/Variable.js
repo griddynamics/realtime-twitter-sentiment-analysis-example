@@ -16,8 +16,12 @@
 export const DATE_TIME = 'HH:mm:ss';
 export const DATE_YEAR = 'YYYY-MM-DD';
 export const DATE_MONTH = 'MMM D, YYYY';
-export const DATE_SHORT = 'M/D/YY';
+export const DATE_SHORT = 'M.D.YYYY';
 export const DATE_TIME_SHORT = 'HH:mm';
-export const DATE_DAY_TIME = 'M/D/YY HH:mm';
-export const DATE_DAY_TIME_TEXT = 'HH:mm, M/D/YY';
-// export const FULL_DATE = 'M/D HH:mm:ss';
+export const DATE_DAY_TIME = 'HH:mm M.D.YYYY';
+export const DATE_DAY_TIME_TEXT = 'HH:mm, M.D.YYYY';
+
+export const VIDEO_SCALE_MOBILE = {width: '100%', height: '188'};
+export const VIDEO_SCALE_DESKTOP = {width: '420', height: '236'};
+
+export const MOBILE_WIDTH = '991px';

@@ -242,9 +242,9 @@ class TweetStat {
    * @returns {Promise.<*[]>}
    */
   static getLastStatGenerated(duration) {
-    var table = 'twitter_sentiment.minute_counters';
+    var table = 'twitter_sentiment.hourly_counters';
 
-    var dt = PERIOD_MINUTE;
+    var dt = PERIOD_HOUR;
     var ts = Math.round(new Date().getTime() / 1000) - dt * 2;
     var ts_utc = moment(ts, 'X');
     ts_utc.utcOffset(0);

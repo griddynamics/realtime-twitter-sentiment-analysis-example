@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import { Line } from '../vendor/react-chartjs2/Chart';
 import ChartHelper from '../helpers/ChartHelper';
+import ChartLegend from './ChartLegend';
+import ChartLegendMobile from '../components/ChartLegendMobile';
+import ReactTooltip from '../vendor/react-tooltip';
 
 /**
  * LineChart component to render Line diagram
@@ -27,10 +31,13 @@ class LineChart extends Component {
 
     this.helper = new ChartHelper();
 
-    this.chartOption = this.helper.getLineOptions();
+    if (props.viewport.isMobile) {
+      this.chartOption = this.helper.getLineMobileOptions();
+    } else {
+      this.chartOption = this.helper.getLineOptions();
+    }
     this.chartDataset = this.helper.datasetLine();
     this.processData = this.helper.processLineData;
-    this.chartOption.title.text = 'Stacked area (positive/negative only)';
   }
 
   componentDidMount() {
@@ -87,15 +94,35 @@ class LineChart extends Component {
   render() {
 
     return (
-      <div className="absolute-box">
-        <Line
-          ref='chart'
-          data={ this.chartDataset }
-          options={ this.chartOption }
-        />
+      <div className="chart-container">
+        <label className="title">
+          Stacked area (positive/negative only)
+          <ChartLegendMobile typeChart="stacked" />
+        </label>
+        <div className="chart-box">
+          <div className="chart">
+            <Line
+              ref='chart'
+              data={ this.chartDataset }
+              options={ this.chartOption }
+            />
+          </div>
+          <div className="legend">
+            <ChartLegend typeChart="stacked"/>
+          </div>
+        </div>
       </div>
     );
   }
 }
 
-export default LineChart;
+
+function mapStateToProps(state) {
+  return {
+    viewport: state.viewport
+  };
+}
+
+export default connect(
+  mapStateToProps
+)(LineChart);

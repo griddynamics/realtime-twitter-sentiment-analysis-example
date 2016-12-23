@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 
 import 'rc-calendar/assets/index.css';
 import RangeCalendar from 'rc-calendar/lib/RangeCalendar';
-
+import SingleRangeCalendar from '../vendor/rc-calendar/SingleRangeCalendar';
 import Picker from 'rc-calendar/lib/Picker';
 import 'rc-time-picker/assets/index.css';
 
@@ -76,9 +77,9 @@ class DateRange extends Component {
   }
 
   render() {
-    let {dateRange} = this.props;
+    let {dateRange,viewport} = this.props;
 
-    const calendar = (
+    let calendar = (
       <RangeCalendar
         dateInputPlaceholder={ ['start', 'end'] }
         locale={ enUS }
@@ -87,6 +88,17 @@ class DateRange extends Component {
         disabledDate={ this.disabledDate }
       />
     );
+    if(viewport.isMobile){
+      calendar = (
+        <SingleRangeCalendar
+          dateInputPlaceholder={ ['start', 'end'] }
+          locale={ enUS }
+          showOk={ true }
+          format={ DATE_SHORT }
+          disabledDate={ this.disabledDate }
+        />
+      )
+    }
 
     return (
       <Picker
@@ -98,15 +110,14 @@ class DateRange extends Component {
         {
           ({value}) => {
             return (
-              <span className="datePicker">
-                <button
-                  disabled={ false }
-                  readOnly
-                  className="btn-calendar"
-                >
-                  {isValidRange(value) && `from ${format(value[0])} to ${format(value[1])}` || ''}
-                </button>
-              </span>
+              <div className="date-picker">
+                <div className="input">
+                  <span className="time-range">
+                    {isValidRange(value) && `${format(value[0])} / ${format(value[1])}` || ''}
+                  </span>
+                  <div className="calendar-icon" title="Open calendar"></div>
+                </div>
+              </div>
             );
           }
         }
@@ -114,5 +125,12 @@ class DateRange extends Component {
     );
   }
 }
+function mapStateToProps(state) {
+  return {
+    viewport: state.viewport
+  };
+}
 
-export default DateRange;
+export default connect(
+  mapStateToProps
+)(DateRange);

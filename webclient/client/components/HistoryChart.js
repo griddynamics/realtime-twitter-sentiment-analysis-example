@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Line } from '../vendor/react-chartjs2/Chart';
 import ChartHelper from '../helpers/ChartHelper';
-import moment from 'moment';
-import { DATE_SHORT, DATE_TIME, DATE_TIME_SHORT } from '../constants/Variable';
+import ChartLegend from './ChartLegend';
+import ChartLegendMobile from '../components/ChartLegendMobile';
+import ReactTooltip from '../vendor/react-tooltip';
 
 /**
  * HistoryChart component to render History diagram
@@ -30,7 +32,12 @@ class HistoryChart extends Component {
     this.helper = new ChartHelper();
     this.lastTooltipItem = null;
     this.deltaTime = 0;
-    this.chartOption = this.helper.getLineOptions();
+    if (props.viewport.isMobile) {
+      this.chartOption = this.helper.getLineMobileOptions();
+    } else {
+      this.chartOption = this.helper.getLineOptions();
+    }
+
     this.chartDataset = this.helper.datasetLineLayers();
     this.processData = this.helper.processLineLayersData;
 
@@ -80,7 +87,7 @@ class HistoryChart extends Component {
    * This method getting date from select point in diagram
    */
   getDataPoint() {
-    if (this.lastTooltipItem){
+    if (this.lastTooltipItem) {
       let dataset = this.chart.config.data.datasets[this.lastTooltipItem.datasetIndex];
       let data = dataset.data[this.lastTooltipItem.index];
 
@@ -126,15 +133,42 @@ class HistoryChart extends Component {
   render() {
 
     return (
-      <div className="absolute-box">
-        <Line
-          ref='chart'
-          data={ this.chartDataset }
-          options={ this.chartOption }
-        />
+      <div className="chart-container">
+        <label className="title">
+          Historical sentiments&nbsp;
+          <span className="info-icon" data-tip data-for="historical-t-tip"></span>
+          <ReactTooltip id="historical-t-tip" place="top" type="dark" effect="solid">
+            <p>
+              The diagram shows a cumulative number of positive and negative tweets
+              for a specified period of time. To see a sample of tweets comprising
+              some chart area click this area and check the panel with tweets on the right.
+            </p>
+          </ReactTooltip>
+        </label>
+        <div className="chart-box">
+          <div className="chart">
+            <Line
+              ref='chart'
+              data={ this.chartDataset }
+              options={ this.chartOption }
+            />
+          </div>
+          <div className="legend">
+            <ChartLegend typeChart="stacked_extended"/>
+          </div>
+        </div>
       </div>
     );
   }
 }
 
-export default HistoryChart;
+
+function mapStateToProps(state) {
+  return {
+    viewport: state.viewport
+  };
+}
+
+export default connect(
+  mapStateToProps
+)(HistoryChart);
